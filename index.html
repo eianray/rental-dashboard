@@ -479,15 +479,15 @@
       </div>
       <div class="metric-card purple">
         <div class="card-accent"></div>
-        <div class="metric-icon">📈</div>
-        <div class="metric-label">Price Trend</div>
-        <div class="metric-value">+2.1%</div>
-        <div class="metric-sub"><span class="trend-up">▲ Upward pressure</span> 30d</div>
+        <div class="metric-icon">🏠</div>
+        <div class="metric-label">Cascade Vista Avg Rent</div>
+        <div class="metric-value" id="m-cv-rent">—</div>
+        <div class="metric-sub" id="m-cv-trend"><span class="trend-up">vs market</span></div>
       </div>
     </div>
 
     <!-- CHART + VACANCY BARS -->
-    <div class="section-title">30-Day Trends</div>
+    <div class="section-title">6-Month Trends (Sep 2025 – Mar 2026)</div>
     <div class="two-col">
       <div class="chart-panel">
         <div class="chart-header">
@@ -629,42 +629,80 @@ function renderMetrics() {
   const avgRent = Math.round(props.reduce((s,p) => s + p.avgRent, 0) / props.length);
   const avgVac = (props.reduce((s,p) => s + p.vacancyRate, 0) / props.length).toFixed(1);
   const totalUnits = props.reduce((s,p) => s + p.totalUnits, 0);
+  const cv = DATA.cascadeVista;
+  // Price trend: compare cascade vista 1BR to market avg 1BR
+  const mkt1br = Math.round(props.filter(p=>p.unitTypes&&p.unitTypes.includes('1BR')).reduce((s,p)=>{
+    const u1 = (p.available||[]).filter(u=>u.type==='1BR');
+    return s + (u1.length ? u1.reduce((a,u)=>a+u.rent,0)/u1.length : p.avgRent);
+  },0) / props.filter(p=>p.unitTypes&&p.unitTypes.includes('1BR')).length);
+  const cvVsMarket = cv ? ((cv.pricing.oneBed.minRent - mkt1br) / mkt1br * 100).toFixed(1) : null;
   document.getElementById('m-avg-rent').textContent = '$' + avgRent.toLocaleString();
   document.getElementById('m-avg-vacancy').textContent = avgVac + '%';
   document.getElementById('m-units').textContent = totalUnits;
+  if (cv) {
+    document.getElementById('m-cv-rent').textContent = '$' + cv.avgRent.toLocaleString();
+    const trendEl = document.getElementById('m-cv-trend');
+    if (trendEl && cvVsMarket !== null) {
+      const sign = cvVsMarket >= 0 ? '+' : '';
+      trendEl.innerHTML = `<span class="${cvVsMarket >= 0 ? 'trend-up' : 'trend-down'}">${cvVsMarket >= 0 ? '▲' : '▼'} ${sign}${cvVsMarket}% vs market 1BR avg</span>`;
+    }
+  }
 }
 
 // ─── TREND CHART ───
 function renderChart() {
   const td = DATA.trendData;
-  const datasets = DATA.properties.map((p, i) => ({
-    label: p.name,
-    data: td.series[p.id],
-    borderColor: COLORS[i],
-    backgroundColor: COLORS[i] + '18',
-    borderWidth: 2,
+  const cv = DATA.cascadeVista;
+  // Cascade Vista first in gold, then competitors
+  const cvDataset = cv && td.series['cascade-vista'] ? [{
+    label: 'Cascade Vista (Ours)',
+    data: td.series['cascade-vista'],
+    borderColor: '#FFD700',
+    backgroundColor: 'rgba(255,215,0,0.12)',
+    borderWidth: 2.5,
     pointRadius: 0,
     pointHoverRadius: 5,
     tension: 0.4,
-    fill: false
-  }));
+    fill: false,
+    borderDash: [],
+  }] : [];
+  const datasets = [
+    ...cvDataset,
+    ...DATA.properties.map((p, i) => ({
+      label: p.name,
+      data: td.series[p.id],
+      borderColor: COLORS[i],
+      backgroundColor: COLORS[i] + '18',
+      borderWidth: 1.5,
+      pointRadius: 0,
+      pointHoverRadius: 5,
+      tension: 0.4,
+      fill: false
+    }))
+  ];
 
   // legend
   const legendEl = document.getElementById('chart-legend');
-  legendEl.innerHTML = DATA.properties.map((p, i) =>
-    `<div class="legend-item" onclick="toggleSeries(${i})">
+  const cvLegend = cv ? `<div class="legend-item" onclick="toggleSeries(0)"><div class="legend-dot" style="background:#FFD700"></div><span>Cascade Vista</span></div>` : '';
+  legendEl.innerHTML = cvLegend + DATA.properties.map((p, i) =>
+    `<div class="legend-item" onclick="toggleSeries(${i + (cv ? 1 : 0)})">
       <div class="legend-dot" style="background:${COLORS[i]}"></div>
       <span>${p.name.split(' ')[0]}</span>
     </div>`
   ).join('');
 
+  // Only show monthly labels for 6-month chart
+  const allDates = td.dates;
+  const labelDates = allDates.map((d, idx) => {
+    const dt = new Date(d + 'T12:00:00');
+    // Show label only on 1st of month
+    return dt.getDate() === 1 ? dt.toLocaleDateString('en-US', {month:'short', year:'2-digit'}) : '';
+  });
+
   const ctx = document.getElementById('trend-chart').getContext('2d');
   trendChart = new Chart(ctx, {
     type: 'line',
-    data: { labels: td.dates.map(d => {
-      const dt = new Date(d + 'T12:00:00');
-      return dt.toLocaleDateString('en-US', {month:'short',day:'numeric'});
-    }), datasets },
+    data: { labels: labelDates, datasets },
     options: {
       responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
@@ -770,9 +808,15 @@ function sortTable(col) {
 // ─── UNITS ───
 function renderUnits(filter) {
   allUnits = [];
+  // Add Cascade Vista units first (highlighted)
+  if (DATA.cascadeVista) {
+    (DATA.cascadeVista.available || []).forEach(u => {
+      allUnits.push({ ...u, propName: DATA.cascadeVista.name, isHome: true });
+    });
+  }
   DATA.properties.forEach(p => {
     (p.available || []).forEach(u => {
-      allUnits.push({ ...u, propName: p.name });
+      allUnits.push({ ...u, propName: p.name, isHome: false });
     });
   });
   const filtered = filter === 'all' ? allUnits : allUnits.filter(u => u.type === filter);
@@ -783,10 +827,12 @@ function renderUnits(filter) {
   grid.innerHTML = filtered.map(u => {
     const bedLabel = u.bed === 0 ? 'Studio' : `${u.bed}BR/${u.bath}BA`;
     const avDate = new Date(u.available + 'T12:00:00').toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'});
-    return `<div class="unit-card">
+    const homeStyle = u.isHome ? 'border-color:rgba(255,215,0,0.4);box-shadow:0 0 12px rgba(255,215,0,0.1);' : '';
+    const homeBadge = u.isHome ? '<span style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#FFD700;margin-left:6px;">OUR UNIT</span>' : '';
+    return `<div class="unit-card" style="${homeStyle}">
       <div class="unit-card-top">
         <div>
-          <div class="unit-prop">${u.propName}</div>
+          <div class="unit-prop">${u.propName}${homeBadge}</div>
           <div class="unit-num">Unit ${u.unit} · ${u.sqft} sqft</div>
         </div>
         <div>
