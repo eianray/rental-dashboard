@@ -487,7 +487,7 @@
     </div>
 
     <!-- CHART + VACANCY BARS -->
-    <div class="section-title">6-Month Trends (Sep 2025 – Mar 2026)</div>
+    <div class="section-title">12-Month Trends (Mar 2025 – Mar 2026)</div>
     <div class="two-col">
       <div class="chart-panel">
         <div class="chart-header">
@@ -691,12 +691,18 @@ function renderChart() {
     </div>`
   ).join('');
 
-  // Only show monthly labels for 6-month chart
+  // Show label on 1st of each month for clean 12-month x-axis
   const allDates = td.dates;
   const labelDates = allDates.map((d, idx) => {
     const dt = new Date(d + 'T12:00:00');
-    // Show label only on 1st of month
-    return dt.getDate() === 1 ? dt.toLocaleDateString('en-US', {month:'short', year:'2-digit'}) : '';
+    if (dt.getDate() === 1) {
+      return dt.toLocaleDateString('en-US', {month:'short', year:'2-digit'});
+    }
+    // Also label the first date if it's not the 1st
+    if (idx === 0) {
+      return dt.toLocaleDateString('en-US', {month:'short', year:'2-digit'});
+    }
+    return '';
   });
 
   const ctx = document.getElementById('trend-chart').getContext('2d');
@@ -723,7 +729,11 @@ function renderChart() {
       scales: {
         x: {
           grid: { color: 'rgba(0,212,255,0.05)' },
-          ticks: { color: '#4A7A9B', font: { size: 10 }, maxTicksLimit: 8 }
+          ticks: { 
+            color: '#4A7A9B', font: { size: 10 }, maxTicksLimit: 14,
+            autoSkip: false,
+            callback: function(val, idx) { return labelDates[idx] || ''; }
+          }
         },
         y: {
           grid: { color: 'rgba(0,212,255,0.05)' },
