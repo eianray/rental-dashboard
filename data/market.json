@@ -1,0 +1,130 @@
+{
+  "lastUpdated": "2026-03-02T18:00:00-08:00",
+  "properties": [
+    {
+      "id": "terwilliger-terrace",
+      "name": "Terwilliger Terrace",
+      "address": "7360 SW Barbur Blvd",
+      "totalUnits": 84,
+      "avgRent": 1685,
+      "minRent": 1150,
+      "maxRent": 2250,
+      "vacancyRate": 4.8,
+      "lastUpdated": "2026-03-02",
+      "unitTypes": ["Studio", "1BR", "2BR"],
+      "available": [
+        { "unit": "104", "type": "Studio", "bed": 0, "bath": 1, "rent": 1150, "sqft": 480, "available": "2026-03-10" },
+        { "unit": "211", "type": "1BR", "bed": 1, "bath": 1, "rent": 1525, "sqft": 680, "available": "2026-03-15" },
+        { "unit": "318", "type": "2BR", "bed": 2, "bath": 2, "rent": 2050, "sqft": 950, "available": "2026-03-20" },
+        { "unit": "220", "type": "1BR", "bed": 1, "bath": 1, "rent": 1495, "sqft": 660, "available": "2026-04-01" }
+      ]
+    },
+    {
+      "id": "river-heights",
+      "name": "River Heights",
+      "address": "5025 SW Corbett Ave",
+      "totalUnits": 62,
+      "avgRent": 1820,
+      "minRent": 1350,
+      "maxRent": 2600,
+      "vacancyRate": 3.2,
+      "lastUpdated": "2026-03-02",
+      "unitTypes": ["1BR", "2BR", "3BR"],
+      "available": [
+        { "unit": "7A", "type": "1BR", "bed": 1, "bath": 1, "rent": 1425, "sqft": 720, "available": "2026-03-08" },
+        { "unit": "12C", "type": "2BR", "bed": 2, "bath": 2, "rent": 2195, "sqft": 1050, "available": "2026-03-22" }
+      ]
+    },
+    {
+      "id": "shadow-hills",
+      "name": "Shadow Hills",
+      "address": "2040 SW Vermont St",
+      "totalUnits": 108,
+      "avgRent": 1540,
+      "minRent": 1095,
+      "maxRent": 2100,
+      "vacancyRate": 6.5,
+      "lastUpdated": "2026-03-01",
+      "unitTypes": ["Studio", "1BR", "2BR"],
+      "available": [
+        { "unit": "A8", "type": "Studio", "bed": 0, "bath": 1, "rent": 1095, "sqft": 450, "available": "2026-03-05" },
+        { "unit": "B14", "type": "1BR", "bed": 1, "bath": 1, "rent": 1375, "sqft": 650, "available": "2026-03-12" },
+        { "unit": "C22", "type": "2BR", "bed": 2, "bath": 1, "rent": 1850, "sqft": 890, "available": "2026-03-18" },
+        { "unit": "D5", "type": "Studio", "bed": 0, "bath": 1, "rent": 1120, "sqft": 460, "available": "2026-03-25" },
+        { "unit": "A19", "type": "1BR", "bed": 1, "bath": 1, "rent": 1395, "sqft": 670, "available": "2026-04-01" },
+        { "unit": "B3", "type": "2BR", "bed": 2, "bath": 2, "rent": 1975, "sqft": 920, "available": "2026-04-05" },
+        { "unit": "C11", "type": "1BR", "bed": 1, "bath": 1, "rent": 1350, "sqft": 640, "available": "2026-04-10" }
+      ]
+    },
+    {
+      "id": "town-and-country",
+      "name": "Town & Country Apartments",
+      "address": "4820 SW Barbur Blvd",
+      "totalUnits": 96,
+      "avgRent": 1610,
+      "minRent": 1200,
+      "maxRent": 2300,
+      "vacancyRate": 5.2,
+      "lastUpdated": "2026-03-02",
+      "unitTypes": ["Studio", "1BR", "2BR"],
+      "available": [
+        { "unit": "101", "type": "Studio", "bed": 0, "bath": 1, "rent": 1200, "sqft": 500, "available": "2026-03-07" },
+        { "unit": "215", "type": "1BR", "bed": 1, "bath": 1, "rent": 1550, "sqft": 700, "available": "2026-03-14" },
+        { "unit": "310", "type": "2BR", "bed": 2, "bath": 2, "rent": 2100, "sqft": 980, "available": "2026-03-21" },
+        { "unit": "204", "type": "1BR", "bed": 1, "bath": 1, "rent": 1525, "sqft": 690, "available": "2026-04-01" },
+        { "unit": "108", "type": "Studio", "bed": 0, "bath": 1, "rent": 1225, "sqft": 510, "available": "2026-04-07" }
+      ]
+    },
+    {
+      "id": "hilltop-house",
+      "name": "Hilltop House Apartments",
+      "address": "3223 SW 11th Ave",
+      "totalUnits": 45,
+      "avgRent": 1950,
+      "minRent": 1500,
+      "maxRent": 2750,
+      "vacancyRate": 4.4,
+      "lastUpdated": "2026-03-02",
+      "unitTypes": ["1BR", "2BR"],
+      "available": [
+        { "unit": "3F", "type": "1BR", "bed": 1, "bath": 1, "rent": 1595, "sqft": 750, "available": "2026-03-10" },
+        { "unit": "6B", "type": "2BR", "bed": 2, "bath": 2, "rent": 2450, "sqft": 1100, "available": "2026-03-28" }
+      ]
+    },
+    {
+      "id": "the-frederick",
+      "name": "The Frederick",
+      "address": "3050 SW 10th Ave",
+      "totalUnits": 72,
+      "avgRent": 2080,
+      "minRent": 1650,
+      "maxRent": 2800,
+      "vacancyRate": 3.8,
+      "lastUpdated": "2026-03-02",
+      "unitTypes": ["1BR", "2BR", "Penthouse"],
+      "available": [
+        { "unit": "202", "type": "1BR", "bed": 1, "bath": 1, "rent": 1725, "sqft": 780, "available": "2026-03-12" },
+        { "unit": "405", "type": "2BR", "bed": 2, "bath": 2, "rent": 2575, "sqft": 1150, "available": "2026-03-20" },
+        { "unit": "108", "type": "1BR", "bed": 1, "bath": 1, "rent": 1695, "sqft": 760, "available": "2026-04-01" }
+      ]
+    }
+  ],
+  "trendData": {
+    "dates": [
+      "2026-02-01","2026-02-02","2026-02-03","2026-02-04","2026-02-05",
+      "2026-02-06","2026-02-07","2026-02-08","2026-02-09","2026-02-10",
+      "2026-02-11","2026-02-12","2026-02-13","2026-02-14","2026-02-15",
+      "2026-02-16","2026-02-17","2026-02-18","2026-02-19","2026-02-20",
+      "2026-02-21","2026-02-22","2026-02-23","2026-02-24","2026-02-25",
+      "2026-02-26","2026-02-27","2026-02-28","2026-03-01","2026-03-02"
+    ],
+    "series": {
+      "terwilliger-terrace": [1658,1660,1662,1659,1661,1665,1668,1670,1667,1672,1675,1673,1676,1678,1680,1679,1682,1681,1683,1685,1684,1686,1685,1687,1686,1685,1684,1686,1685,1685],
+      "river-heights": [1790,1792,1795,1793,1796,1798,1800,1802,1799,1803,1806,1808,1811,1810,1812,1813,1815,1816,1814,1817,1819,1820,1818,1821,1820,1819,1821,1820,1819,1820],
+      "shadow-hills": [1510,1508,1512,1515,1513,1516,1518,1520,1517,1522,1525,1523,1527,1530,1528,1532,1535,1533,1537,1538,1540,1539,1541,1542,1540,1539,1541,1540,1539,1540],
+      "town-and-country": [1580,1582,1581,1584,1586,1588,1587,1590,1592,1595,1593,1596,1598,1601,1600,1603,1605,1606,1608,1607,1609,1610,1608,1611,1610,1609,1611,1610,1609,1610],
+      "hilltop-house": [1915,1918,1920,1922,1919,1924,1928,1930,1927,1932,1935,1933,1937,1940,1942,1944,1946,1945,1948,1950,1949,1952,1951,1953,1952,1951,1950,1952,1951,1950],
+      "the-frederick": [2040,2042,2045,2048,2046,2050,2053,2056,2054,2058,2061,2063,2066,2068,2065,2070,2073,2074,2076,2078,2077,2080,2079,2081,2080,2079,2081,2080,2079,2080]
+    }
+  }
+}
