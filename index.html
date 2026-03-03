@@ -308,6 +308,72 @@
   .unit-avail { font-size: 11px; color: var(--text3); margin-top: 8px; }
   .unit-avail span { color: var(--orange); font-weight: 500; }
 
+  /* ─── SETTINGS PANEL ─── */
+  .settings-section { margin-bottom: 28px; }
+  .settings-panel {
+    background: var(--bg2); border: 1px solid var(--border2);
+    border-radius: var(--radius); padding: 24px;
+    position: relative; overflow: hidden;
+  }
+  .settings-panel::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--blue), var(--green), transparent);
+  }
+  .settings-inner {
+    display: flex; align-items: flex-end; gap: 32px; flex-wrap: wrap;
+  }
+  .settings-field { display: flex; flex-direction: column; gap: 8px; }
+  .settings-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--text3);
+  }
+  .freq-toggle {
+    display: flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+    background: var(--bg3);
+  }
+  .freq-btn {
+    padding: 9px 18px; font-size: 12px; font-weight: 600; font-family: 'Inter', sans-serif;
+    background: none; border: none; color: var(--text3); cursor: pointer;
+    transition: all 0.15s; white-space: nowrap;
+    border-right: 1px solid var(--border);
+  }
+  .freq-btn:last-child { border-right: none; }
+  .freq-btn.active {
+    background: rgba(0,212,255,0.15); color: var(--blue);
+    box-shadow: inset 0 0 12px rgba(0,212,255,0.1);
+  }
+  .freq-btn:hover:not(.active) { background: rgba(255,255,255,0.04); color: var(--text); }
+  .settings-email-display {
+    padding: 9px 14px; background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border2); border-radius: 8px;
+    font-size: 13px; color: var(--text3); font-family: 'Inter', sans-serif;
+    min-width: 200px;
+  }
+  .next-delivery-val {
+    font-size: 13px; font-weight: 600; color: var(--green);
+    padding: 9px 0; min-width: 120px;
+  }
+  .settings-save-btn {
+    padding: 9px 22px; background: linear-gradient(135deg, rgba(0,212,255,0.2), rgba(0,212,255,0.08));
+    border: 1px solid var(--blue); border-radius: 8px; color: var(--blue);
+    font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+    font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+    align-self: flex-end;
+  }
+  .settings-save-btn:hover { background: rgba(0,212,255,0.25); box-shadow: var(--glow-blue); }
+
+  /* TOAST */
+  .settings-toast {
+    position: fixed; bottom: 32px; right: 32px;
+    background: var(--bg2); border: 1px solid rgba(0,255,136,0.35);
+    color: var(--green); font-size: 13px; font-weight: 600;
+    padding: 12px 20px; border-radius: 8px;
+    box-shadow: var(--glow-green), 0 8px 32px rgba(0,0,0,0.4);
+    display: none; align-items: center; gap: 8px; z-index: 9000;
+    animation: toastIn 0.2s ease;
+  }
+  @keyframes toastIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform:none; } }
+
   /* FOOTER */
   .dash-footer {
     padding: 20px 32px; text-align: center;
@@ -468,7 +534,34 @@
       <div class="unit-grid" id="unit-grid"></div>
     </div>
 
+    <!-- REPORT DELIVERY SETTINGS -->
+    <div class="settings-section">
+      <div class="section-title">Report Delivery Settings</div>
+      <div class="settings-panel">
+        <div class="settings-inner">
+          <div class="settings-field">
+            <div class="settings-label">Delivery Frequency</div>
+            <div class="freq-toggle">
+              <button class="freq-btn" data-freq="daily" onclick="setFreq('daily',this)">Daily</button>
+              <button class="freq-btn" data-freq="twice-weekly" onclick="setFreq('twice-weekly',this)">Twice Weekly</button>
+              <button class="freq-btn" data-freq="weekly" onclick="setFreq('weekly',this)">Weekly</button>
+            </div>
+          </div>
+          <div class="settings-field">
+            <div class="settings-label">Delivery Email</div>
+            <div class="settings-email-display">tmray@rtresi.com</div>
+          </div>
+          <div class="settings-field">
+            <div class="settings-label">Next Delivery</div>
+            <div class="next-delivery-val" id="next-delivery-date">—</div>
+          </div>
+          <button class="settings-save-btn" onclick="saveFreq()">Save Settings</button>
+        </div>
+      </div>
+    </div>
+
   </div>
+  <div class="settings-toast" id="settings-toast">✓ Settings saved</div>
   <div class="dash-footer">
     &copy; 2026 <a href="#">Planetary Modeling</a> &nbsp;·&nbsp; Sample/Demo Data &nbsp;·&nbsp; SW Portland Market Intelligence &nbsp;·&nbsp; v2.1.0
   </div>
@@ -716,6 +809,55 @@ function filterUnits(type, btn) {
 
 // Auto-init if already authed
 if (sessionStorage.getItem('pm_auth')) loadDashboard();
+
+// ─── REPORT FREQUENCY SETTINGS ───
+function calcNextDelivery(freq) {
+  const now = new Date();
+  const day = now.getDay(); // 0=Sun, 1=Mon...
+  let next = new Date(now);
+  next.setHours(8, 0, 0, 0); // 8am delivery
+  if (freq === 'daily') {
+    next.setDate(now.getDate() + 1);
+  } else if (freq === 'twice-weekly') {
+    // Mon and Thu
+    const targets = [1, 4];
+    let daysAhead = null;
+    for (let d of targets) {
+      let diff = d - day;
+      if (diff <= 0) diff += 7;
+      if (daysAhead === null || diff < daysAhead) daysAhead = diff;
+    }
+    next.setDate(now.getDate() + daysAhead);
+  } else {
+    // weekly = Monday
+    let diff = 1 - day;
+    if (diff <= 0) diff += 7;
+    next.setDate(now.getDate() + diff);
+  }
+  return next.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+}
+
+function setFreq(freq, btnEl) {
+  document.querySelectorAll('.freq-btn').forEach(b => b.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+  document.getElementById('next-delivery-date').textContent = calcNextDelivery(freq);
+}
+
+function saveFreq() {
+  const active = document.querySelector('.freq-btn.active');
+  if (!active) return;
+  localStorage.setItem('rental_report_frequency', active.dataset.freq);
+  const toast = document.getElementById('settings-toast');
+  toast.style.display = 'flex';
+  setTimeout(() => { toast.style.display = 'none'; }, 2500);
+}
+
+function initFreqSettings() {
+  const saved = localStorage.getItem('rental_report_frequency') || 'weekly';
+  const btn = document.querySelector(`.freq-btn[data-freq="${saved}"]`);
+  setFreq(saved, btn);
+}
+initFreqSettings();
 </script>
 </body>
 </html>
